@@ -35,9 +35,9 @@ public class TestGame implements ILogic {
 
 
         Model model = loader.loadOBJModel("/models/chicken.obj");
-        model.setTexture(new Texture(loader.loadTexture("textures/bricks.png")));
-        entity = new Entity(model, new Vector3f(0,0,-5),new Vector3f(0,0,0), 1);
 
+        model.setTexture(new Texture(loader.loadTexture("textures/chicken.png")));
+        entity = new Entity(model, new Vector3f(0,0,-100),new Vector3f(0,0,0), 1);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class TestGame implements ILogic {
     @Override
     public void update(float interval, MouseInput mouseInput) {
         camera.movePosition(cameraInc.x * CAMERA_MOVE_SPEED, cameraInc.y * CAMERA_MOVE_SPEED, cameraInc.z * CAMERA_MOVE_SPEED);
-        entity.incrementRotation(0.5f,0.5f,0.5f);
+        // entity.incrementRotation(0.5f,0.5f,0.5f);
 
         if (mouseInput.isLeftPressed()){
             Vector2f rotVector = mouseInput.getDisplayVector();
