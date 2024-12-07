@@ -2,6 +2,9 @@ package Core;
 
 import Core.Entity.Model;
 import Utils.Utils;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+import org.joml.Vector3i;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
@@ -13,6 +16,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ObjectLoader {
 
@@ -28,6 +32,111 @@ public class ObjectLoader {
         storeDataInAttributeList(1,2, textureCoords);
         unbind();
         return new Model(id,indices.length);
+    }
+    public Model loadOBJModel(String filename) {
+        List<String> lines = Utils.readAllLines(filename);
+
+        List<Vector3f> vertices = new ArrayList<>();
+        List<Vector3f> normals = new ArrayList<>();
+        List<Vector2f> textures = new ArrayList<>();
+
+        List<Vector3i> faces = new ArrayList<>();
+
+        for (String line : lines) {
+            String[] tokens = line.split("\\s+");
+            switch (tokens[0]) {
+                case"v":
+                    // Vertices
+                    Vector3f verticesVector = new Vector3f(
+                            Float.parseFloat(tokens[1]),
+                            Float.parseFloat(tokens[2]),
+                            Float.parseFloat(tokens[3])
+                    );
+                    vertices.add(verticesVector);
+                    break;
+                case "vt":
+                    // Vertex Textures
+                    Vector2f texturesVector = new Vector2f(
+                            Float.parseFloat(tokens[1]),
+                            Float.parseFloat(tokens[2])
+                    );
+                    textures.add(texturesVector);
+                    break;
+                case "vn":
+                    // Vertex Normals
+                    Vector3f normalsVector = new Vector3f(
+                            Float.parseFloat(tokens[1]),
+                            Float.parseFloat(tokens[2]),
+                            Float.parseFloat(tokens[3])
+                    );
+                    normals.add(normalsVector);
+                    break;
+                case "f":
+                    // Faces
+                    processFace(tokens[1],faces);
+                    processFace(tokens[2],faces);
+                    processFace(tokens[3],faces);
+                    break;
+                default:
+                    break;
+            }
+        }
+        List<Integer> indices = new ArrayList<>();
+        float[] verticesArray = new float[vertices.size() * 3];
+        int i = 0;
+        for (Vector3f pos : vertices) {
+            verticesArray[i * 3] = pos.x;
+            verticesArray[i * 3 + 1] = pos.y;
+            verticesArray[i * 3 + 2] = pos.z;
+            i++;
+        }
+        float[] textureCoordsArray = new float[textures.size() * 2];
+        float[] normalsArray = new float[normals.size() * 3];
+
+        for (Vector3i face : faces) {
+            processVertex(face.x,face.y,face.z, textures, normals, indices,textureCoordsArray,normalsArray);
+        }
+        int[] indicesArray = indices.stream().mapToInt((Integer v) -> (v)).toArray();
+        return loadModel(verticesArray,indicesArray, textureCoordsArray);
+    }
+    private static void processVertex(int pos,
+                                      int textCoords,
+                                      int normal,
+                                      List<Vector2f> textCoordsList,
+                                      List<Vector3f> normalsList,
+                                      List<Integer> indicesList,
+                                      float[] textCoordsArray,
+                                      float[] normalArray) {
+
+        indicesList.add(pos);
+        if (textCoords >= 0) {
+            Vector2f textCoordsVector = textCoordsList.get(textCoords);
+            textCoordsArray[pos * 2] = textCoordsVector.x;
+            textCoordsArray[pos * 2 + 1] = 1 - textCoordsVector.y;
+        }
+        if (normal >= 0){
+            Vector3f normalVector = normalsList.get(normal);
+            normalArray[pos * 3] = normalVector.x;
+            normalArray[pos * 3 + 1] = normalVector.y;
+            normalArray[pos * 3 + 2] = normalVector.z;
+        }
+    }
+    private static void processFace(String token, List<Vector3i> faces) {
+        String[] lineTokens = token.split("/");
+        int length = lineTokens.length;
+        int pos = -1;
+        int coords = -1;
+        int normals = -1;
+        pos = Integer.parseInt(lineTokens[0])-1;
+        if (length > 1){
+            String texCoords = lineTokens[1];
+            coords = texCoords.length() > 0 ? Integer.parseInt(texCoords) - 1 : -1;
+            if (length > 2){
+                normals = Integer.parseInt(lineTokens[2]) - 1;
+            }
+        }
+        Vector3i facesVector = new Vector3i(pos,coords,normals);
+        faces.add(facesVector);
     }
     public int loadTexture(String filename) throws Exception {
         int width, height;
