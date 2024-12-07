@@ -5,6 +5,8 @@ import Core.Entity.Entity;
 import Core.Entity.Model;
 import Core.Entity.Texture;
 import Core.RenderManager;
+import Utils.Consts;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
@@ -112,9 +114,15 @@ public class TestGame implements ILogic {
         }
     }
     @Override
-    public void update() {
+    public void update(float interval, MouseInput mouseInput) {
         camera.movePosition(cameraInc.x * CAMERA_MOVE_SPEED, cameraInc.y * CAMERA_MOVE_SPEED, cameraInc.z * CAMERA_MOVE_SPEED);
         entity.incrementRotation(0.5f,0.5f,0.5f);
+
+        if (mouseInput.isLeftPressed()){
+            Vector2f rotVector = mouseInput.getDisplayVector();
+            camera.moveRotation(rotVector.x * Consts.MOUSE_SENSITIVITY, rotVector.y * Consts.MOUSE_SENSITIVITY, 0);
+        }
+
     }
 
 

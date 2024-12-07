@@ -10,8 +10,6 @@ public class Launcher {
     public static EngineManager engine;
     private static TestGame testGame;
 
-
-
     public static void main(String[] args) {
         display = new WindowManager(Consts.TITLE, 1280,720,true);
         testGame = new TestGame();
@@ -25,7 +23,6 @@ public class Launcher {
     public static WindowManager getWindow() {
         return display;
     }
-
     public static TestGame getGame() {
         return testGame;
     }

@@ -163,7 +163,7 @@ public class WindowManager {
         return projectionMatrix.setPerspective(FOV, aspectRatio, Z_NEAR, Z_FAR);
     }
 
-    public long getWindow() {
+    public long getWindowHandle() {
         return window;
     }
 
