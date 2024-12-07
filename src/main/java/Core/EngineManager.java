@@ -14,15 +14,17 @@ public class EngineManager {
 
     private boolean isRunning;
 
-    private DisplayManager display;
+    private WindowManager window;
     private GLFWErrorCallback errorCallback;
 
     private ILogic gameLogic;
 
     private void init() throws Exception {
         GLFW.glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
-        display = Launcher.getDisplayManager();
-        display.init();
+        window = Launcher.getWindow();
+        gameLogic = Launcher.getGame();
+        window.init();
+        gameLogic.init();
     }
     public void start() throws Exception {
         init();
@@ -53,12 +55,12 @@ public class EngineManager {
             while (unprocessedTime >= frameTime) {
                 render = true;
                 unprocessedTime -= frameTime;
-                if (display.windowShouldClose()){
+                if (window.windowShouldClose()){
                     stop();
                 }
                 if(frameCounter >= NANOSECONDS){
                     setFps(frames);
-                    display.setTitle(Consts.TITLE + " Game Engine FPS: " + getFps());
+                    window.setTitle(Consts.TITLE + "Game Engine FPS: " + getFps());
                     frames = 0;
                     frameCounter = 0;
                 }
@@ -79,18 +81,18 @@ public class EngineManager {
         isRunning = false;
     }
     private void update(){
-        //gameLogic.update();
+        gameLogic.update();
     }
     private void render(){
-        //gameLogic.render();
-        display.update();
+        gameLogic.render();
+        window.update();
     }
     private void input(){
-        //gameLogic.input();
+        gameLogic.input();
     }
     private void cleanup(){
-        //gameLogic.cleanup();
-        display.cleanup();
+        window.cleanup();
+        gameLogic.cleanup();
         errorCallback.free();
         GLFW.glfwTerminate();
     }

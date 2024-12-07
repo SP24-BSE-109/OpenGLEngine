@@ -1,16 +1,20 @@
 package Test;
 
-import Core.DisplayManager;
+import Core.WindowManager;
 import Core.EngineManager;
 import Utils.*;
 
 public class Launcher {
 
-    public static DisplayManager display;
+    public static WindowManager display;
     public static EngineManager engine;
-    public static void main(String[] args) {
-        display = new DisplayManager(Consts.TITLE, 1280,720,true);
+    private static TestGame testGame;
 
+
+
+    public static void main(String[] args) {
+        display = new WindowManager(Consts.TITLE, 1280,720,true);
+        testGame = new TestGame();
         engine = new EngineManager();
         try{
             engine.start();
@@ -18,7 +22,11 @@ public class Launcher {
             e.printStackTrace();
         }
     }
-    public static DisplayManager getDisplayManager() {
+    public static WindowManager getWindow() {
         return display;
+    }
+
+    public static TestGame getGame() {
+        return testGame;
     }
 }

@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryUtil;
 
-public class DisplayManager {
+public class WindowManager {
 
     public static final float FOV = (float) Math.toRadians(60.0f);
     public static final float Z_NEAR = 0.01f;
@@ -22,7 +22,7 @@ public class DisplayManager {
 
     private final Matrix4f projectionMatrix;
 
-    public DisplayManager(String title, int width, int height, boolean vSync) {
+    public WindowManager(String title, int width, int height, boolean vSync) {
         this.title = title;
         this.width = width;
         this.height = height;
@@ -71,9 +71,9 @@ public class DisplayManager {
         }
 
         GLFW.glfwSetFramebufferSizeCallback(window, (window, width, height) -> {
-            this.width = width;
-            this.height = height;
-            this.setResize(true);
+           this.width = width;
+           this.height = height;
+           this.setResize(true);
         });
 
         GLFW.glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
@@ -103,7 +103,7 @@ public class DisplayManager {
 
         GL.createCapabilities();
         // Black window colour
-        GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glEnable(GL11.GL_STENCIL_TEST);
@@ -113,6 +113,7 @@ public class DisplayManager {
     // Update the graphics on the window
     public void update() {
         GLFW.glfwSwapBuffers(window);
+        // Start displaying the windows currently in queue
         GLFW.glfwPollEvents();
     }
     // Destroy window
