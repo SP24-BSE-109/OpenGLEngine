@@ -36,7 +36,7 @@ public class TestGame implements ILogic {
 
         Model model = loader.loadOBJModel("/models/chicken.obj");
 
-        model.setTexture(new Texture(loader.loadTexture("textures/chicken.png")));
+        model.setTexture(new Texture(loader.loadTexture("textures/chicken.png")), 1f);
         entity = new Entity(model, new Vector3f(0,0,-100),new Vector3f(0,0,0), 1);
     }
 
@@ -65,7 +65,7 @@ public class TestGame implements ILogic {
     @Override
     public void update(float interval, MouseInput mouseInput) {
         camera.movePosition(cameraInc.x * CAMERA_MOVE_SPEED, cameraInc.y * CAMERA_MOVE_SPEED, cameraInc.z * CAMERA_MOVE_SPEED);
-        // entity.incrementRotation(0.5f,0.5f,0.5f);
+        entity.incrementRotation(0.5f,0.5f,0.5f);
 
         if (mouseInput.isLeftPressed()){
             Vector2f rotVector = mouseInput.getDisplayVector();
@@ -81,7 +81,6 @@ public class TestGame implements ILogic {
             GL11.glViewport(0, 0, window.getWidth(), window.getHeight());
             window.setResize(true);
         }
-        window.setClearColour(0f,0f,0f,0.0f);
         renderer.render(entity,camera);
     }
 
