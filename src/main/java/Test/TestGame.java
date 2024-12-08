@@ -12,6 +12,10 @@ import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 public class TestGame implements ILogic {
 
     private static final float CAMERA_MOVE_SPEED = 0.1f;
@@ -22,7 +26,7 @@ public class TestGame implements ILogic {
     private float lightAngle;
     private DirectionalLight directionalLight;
 
-    private Entity entity;
+    private List<Entity> entities;
     private Camera camera;
     private Vector3f cameraInc;
     public TestGame() {
@@ -38,12 +42,21 @@ public class TestGame implements ILogic {
     public void init() throws Exception {
         renderer.init();
 
-
         Model model = loader.loadOBJModel("/models/chicken.obj");
-
         model.setTexture(new Texture(loader.loadTexture("textures/chicken.png")), 1f);
-        entity = new Entity(model, new Vector3f(0,0,0),new Vector3f(0,0,0), 1);
 
+        entities = new ArrayList<>();
+        Random rnd = new Random();
+        for (int i = 0; i < 200; i++) {
+            float x = rnd.nextFloat() * 100 - 50;
+            float y = rnd.nextFloat() * 100 - 50;
+            float z = rnd.nextFloat() * -300;
+            entities.add(new Entity(model,
+                    new Vector3f(x,y,z),
+                    new Vector3f(rnd.nextFloat() * 180,rnd.nextFloat() * 180,rnd.nextFloat() * 180),
+                    1));
+        }
+        entities.add(new Entity(model, new Vector3f(0,0,-5), new Vector3f(0,0,0), 1));
         float lightIntensity = 0.0f;
         Vector3f lightPosition = new Vector3f(-1,10,0);
         Vector3f lightColour = new Vector3f(1,1,1);
@@ -103,6 +116,10 @@ public class TestGame implements ILogic {
         directionalLight.getDirection().x = (float) Math.sin(angleRad);
         directionalLight.getDirection().y = (float) Math.cos(angleRad);
 
+        for (Entity entity : entities) {
+            renderer.processEntity(entity);
+        }
+
     }
 
 
@@ -112,7 +129,7 @@ public class TestGame implements ILogic {
             GL11.glViewport(0, 0, window.getWidth(), window.getHeight());
             window.setResize(true);
         }
-        renderer.render(entity,camera, directionalLight);
+        renderer.render(camera, directionalLight);
     }
 
     @Override
