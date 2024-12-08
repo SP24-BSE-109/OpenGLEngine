@@ -75,7 +75,6 @@ public class ObjectLoader {
                 case "f":
                     // Faces
                     if (tokens.length == 5) {
-                        // Quad face - split into two triangles
                         processFace(tokens[1], faces);
                         processFace(tokens[2], faces);
                         processFace(tokens[3], faces);
@@ -84,7 +83,6 @@ public class ObjectLoader {
                         processFace(tokens[3], faces);
                         processFace(tokens[4], faces);
                     } else {
-                        // Triangular face
                         processFace(tokens[1], faces);
                         processFace(tokens[2], faces);
                         processFace(tokens[3], faces);

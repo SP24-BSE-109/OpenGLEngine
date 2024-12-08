@@ -2,6 +2,7 @@ package Core;
 
 
 import Core.Entity.Material;
+import Lighting.DirectionalLight;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -47,6 +48,18 @@ public class ShaderManager {
     public void setUniform(String uniformName, Vector4f value) {
         GL20.glUniform4f(uniforms.get(uniformName), value.x, value.y, value.z, value.w);
     }
+    public void setUniform(String uniformName, Material material) {
+        setUniform(uniformName + ".ambient", material.getAmbientColour());
+        setUniform(uniformName + ".diffuse", material.getDiffuseColour()   );
+        setUniform(uniformName + ".specular", material.getSpecularColour());
+        setUniform(uniformName + ".hasTexture", material.hasTexture() ? 1 : 0);
+        setUniform(uniformName + ".reflectivity", material.getReflectivity());
+    }
+    public void setUniform(String uniformName, DirectionalLight directionalLight) {
+        setUniform(uniformName + ".colour", directionalLight.getColour());
+        setUniform(uniformName + ".intensity", directionalLight.getIntensity());
+        setUniform(uniformName + ".direction", directionalLight.getDirection());
+    }
     public void setUniform(String uniformName, boolean value) {
         float result = 0;
         if (value) {
@@ -75,19 +88,19 @@ public class ShaderManager {
         GL20.glAttachShader(programID, shaderID);
         return shaderID;
     }
+
+    public void createDirectionalLightUniform(String uniformName) throws Exception {
+        createUniform(uniformName + ".colour");
+        createUniform(uniformName + ".direction");
+        createUniform(uniformName + ".intensity");
+    }
+
     public void createMaterialUniform(String uniformName) throws Exception {
         createUniform(uniformName + ".ambient");
         createUniform(uniformName + ".diffuse");
         createUniform(uniformName + ".specular");
         createUniform(uniformName + ".hasTexture");
         createUniform(uniformName + ".reflectivity");
-    }
-    public void setUniform(String uniformName, Material material) {
-        setUniform(uniformName + ".ambient", material.getAmbientColour());
-        setUniform(uniformName + ".diffuse", material.getDiffuseColour()   );
-        setUniform(uniformName + ".specular", material.getSpecularColour());
-        setUniform(uniformName + ".hasTexture", material.hasTexture() ? 1 : 0);
-        setUniform(uniformName + ".reflectivity", material.getReflectivity());
     }
 
     public void link() throws Exception {
