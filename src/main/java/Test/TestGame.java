@@ -4,7 +4,7 @@ import Core.*;
 import Core.Entity.Entity;
 import Core.Entity.Model;
 import Core.Entity.Texture;
-import Core.RenderManager;
+import Rendering.RenderManager;
 import Lighting.DirectionalLight;
 import Utils.Consts;
 import org.joml.Vector2f;
