@@ -2,7 +2,9 @@ package Test;
 
 import Core.*;
 import Core.Entity.Entity;
+import Core.Entity.Material;
 import Core.Entity.Model;
+import Core.Entity.Terrain.Terrain;
 import Core.Entity.Texture;
 import Rendering.RenderManager;
 import Lighting.DirectionalLight;
@@ -27,6 +29,8 @@ public class TestGame implements ILogic {
     private DirectionalLight directionalLight;
 
     private List<Entity> entities;
+    private List<Terrain> terrains;
+
     private Camera camera;
     private Vector3f cameraInc;
     public TestGame() {
@@ -45,9 +49,12 @@ public class TestGame implements ILogic {
         Model model = loader.loadOBJModel("/models/chicken.obj");
         model.setTexture(new Texture(loader.loadTexture("textures/chicken.png")), 1f);
 
+        terrains = new ArrayList<>();
+        Terrain terrain = new Terrain(new Vector3f(0,-1,-800), loader, new Material(new Texture(loader.loadTexture("textures/floor.png"))));
+        terrains.add(terrain);
         entities = new ArrayList<>();
         Random rnd = new Random();
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 2; i++) {
             float x = rnd.nextFloat() * 100 - 50;
             float y = rnd.nextFloat() * 100 - 50;
             float z = rnd.nextFloat() * -300;
@@ -118,6 +125,9 @@ public class TestGame implements ILogic {
 
         for (Entity entity : entities) {
             renderer.processEntity(entity);
+        }
+        for (Terrain terrain : terrains) {
+            renderer.processTerrain(terrain);
         }
 
     }
