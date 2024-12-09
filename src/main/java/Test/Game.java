@@ -11,11 +11,10 @@ import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class TestGame implements ILogic {
+public class Game implements ILogic {
 
     private final RenderManager renderer;
     private final WindowManager window;
@@ -25,7 +24,10 @@ public class TestGame implements ILogic {
 
     private Camera camera;
     private Vector3f cameraInc;
-    public TestGame() {
+
+    private Entity player;
+
+    public Game() {
         this.renderer = new RenderManager();
         this.window = Launcher.getWindow();
         loader = new ObjectLoader();
@@ -37,11 +39,11 @@ public class TestGame implements ILogic {
     @Override
     public void init() throws Exception {
         renderer.init();
+        // Player Model
+        Model model = loader.loadOBJModel("/models/car.obj");
+        model.setTexture(new Texture(loader.loadTexture("textures/car.png")), 1f);
 
-        Model model = loader.loadOBJModel("/models/chicken.obj");
-        model.setTexture(new Texture(loader.loadTexture("textures/chicken.png")), 1f);
-
-        Terrain terrain = new Terrain(new Vector3f(0,-1,-800), loader, new Material(new Texture(loader.loadTexture("textures/floor.png"))));
+        Terrain terrain = new Terrain(new Vector3f(0,-1,-800), loader, new Material(new Texture(loader.loadTexture("textures/stonefloor.png"))));
         sceneManager.addTerrain(terrain);
         Random rnd = new Random();
         for (int i = 0; i < 2; i++) {
@@ -51,13 +53,17 @@ public class TestGame implements ILogic {
             sceneManager.addEntity(new Entity(model,
                     new Vector3f(x,y,z),
                     new Vector3f(rnd.nextFloat() * 180,rnd.nextFloat() * 180,rnd.nextFloat() * 180),
-                    1));
+                    0.05f));
         }
-        sceneManager.addEntity(new Entity(model, new Vector3f(0,0,-5), new Vector3f(0,0,0), 1));
-        float lightIntensity = 0.0f;
+        // Player entity
+        player = new Entity(model, new Vector3f(0,-1,-10), new Vector3f(0,180,0), 0.05f);
+        sceneManager.addEntity(player);
+        float lightIntensity = 1.0f;
         Vector3f lightPosition = new Vector3f(-1,10,0);
         Vector3f lightColour = new Vector3f(1,1,1);
-        sceneManager.setDirectionalLight(new DirectionalLight(lightPosition, lightColour, lightIntensity));
+        DirectionalLight directionalLight = new DirectionalLight(lightColour, lightPosition, lightIntensity);
+        sceneManager.setDirectionalLight(directionalLight);
+
     }
 
     @Override
@@ -84,35 +90,17 @@ public class TestGame implements ILogic {
     }
     @Override
     public void update(float interval, MouseInput mouseInput) {
+
+        // Move Player
+        player.incrementPosition(0,0,-0.1f);
+
         camera.movePosition(cameraInc.x * Consts.CAMERA_MOVE_SPEED, cameraInc.y * Consts.CAMERA_MOVE_SPEED, cameraInc.z * Consts.CAMERA_MOVE_SPEED);
-        // entity.incrementRotation(0.5f,0.5f,0.5f);
 
         if (mouseInput.isLeftPressed()){
             Vector2f rotVector = mouseInput.getDisplayVector();
             camera.moveRotation(rotVector.x * Consts.MOUSE_SENSITIVITY, rotVector.y * Consts.MOUSE_SENSITIVITY, 0);
         }
-        float lightAngle = sceneManager.getLightAngle();
-        DirectionalLight directionalLight = sceneManager.getDirectionalLight();
-        lightAngle += 0.5f;
-        if (lightAngle > 90) {
-            directionalLight.setIntensity(0);
-            if (lightAngle > 360){
-                lightAngle = -90;
-            }
-        } else if (lightAngle <= -80 || lightAngle >= 80) {
-            float factor = 1 - (Math.abs(lightAngle) - 80) / 10.0f;
-            directionalLight.setIntensity(factor);
-            directionalLight.getColour().y = Math.max(factor,0.9f);
-            directionalLight.getColour().z = Math.max(factor,0.5f);
-        }else {
-            directionalLight.setIntensity(1);
-            directionalLight.getColour().x = 1f;
-            directionalLight.getColour().y = 1f;
-            directionalLight.getColour().z = 1f;
-        }
-        double angleRad = Math.toRadians(lightAngle);
-        directionalLight.getDirection().x = (float) Math.sin(angleRad);
-        directionalLight.getDirection().y = (float) Math.cos(angleRad);
+
         List<Entity> entities = sceneManager.getEntities();
         List<Terrain> terrains = sceneManager.getTerrains();
         for (Entity entity : entities) {

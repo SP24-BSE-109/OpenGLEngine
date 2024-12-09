@@ -8,11 +8,11 @@ public class Launcher {
 
     public static WindowManager display;
     public static EngineManager engine;
-    private static TestGame testGame;
+    private static Game game;
 
     public static void main(String[] args) {
         display = new WindowManager(Consts.TITLE, 1280,720,true);
-        testGame = new TestGame();
+        game = new Game();
         engine = new EngineManager();
         try{
             engine.start();
@@ -23,7 +23,7 @@ public class Launcher {
     public static WindowManager getWindow() {
         return display;
     }
-    public static TestGame getGame() {
-        return testGame;
+    public static Game getGame() {
+        return game;
     }
 }
