@@ -50,7 +50,7 @@ public class Game implements ILogic {
         fuelModel.setTexture(new Texture(loader.loadTexture("textures/fuel.png")), 1f);
 
 
-        Terrain terrain = new Terrain(new Vector3f(-400,-1,-800), loader, new Material(new Texture(loader.loadTexture("textures/stonefloor.png"))));
+        Terrain terrain = new Terrain(new Vector3f(-400,-1,-800), loader, new Material(new Texture(loader.loadTexture("textures/floor.png"))));
         sceneManager.addTerrain(terrain);
         Random rnd = new Random();
 
@@ -82,11 +82,10 @@ public class Game implements ILogic {
         if (player.getPosition().x >= 10 || player.getPosition().x <= -10) {
             return;
         }
-
-        if (window.isKeyPressed(GLFW.GLFW_KEY_A)){
+        if (window.isKeyPressed(GLFW.GLFW_KEY_A)|| window.isKeyPressed(GLFW.GLFW_KEY_LEFT)){
             moveDir = new Vector3f(-1,0,0);
         }
-        if (window.isKeyPressed(GLFW.GLFW_KEY_D)){
+        if (window.isKeyPressed(GLFW.GLFW_KEY_D) || window.isKeyPressed(GLFW.GLFW_KEY_RIGHT)){
             moveDir = new Vector3f(1,0,0);
         }
     }
@@ -99,19 +98,11 @@ public class Game implements ILogic {
         camera.movePosition(0,0,-1 * moveSpeed);
         directionalLight.setDirection(player.getPosition());
 
-
-
-        // camera.movePosition(cameraInc.x * Consts.CAMERA_MOVE_SPEED, cameraInc.y * Consts.CAMERA_MOVE_SPEED, cameraInc.z * Consts.CAMERA_MOVE_SPEED);
-//
-//        if (mouseInput.isLeftPressed()){
-//            Vector2f rotVector = mouseInput.getDisplayVector();
-//            camera.moveRotation(rotVector.x * Consts.MOUSE_SENSITIVITY, rotVector.y * Consts.MOUSE_SENSITIVITY, 0);
-//        }
-
         List<Entity> entities = sceneManager.getEntities();
         List<Terrain> terrains = sceneManager.getTerrains();
         for (Entity entity : entities) {
             renderer.processEntity(entity);
+
         }
         for (Terrain terrain : terrains) {
             renderer.processTerrain(terrain);
