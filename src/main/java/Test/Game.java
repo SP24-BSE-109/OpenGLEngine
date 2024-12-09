@@ -23,16 +23,18 @@ public class Game implements ILogic {
     private SceneManager sceneManager;
 
     private Camera camera;
-    private Vector3f cameraInc;
+    private DirectionalLight directionalLight;
 
     private Entity player;
+    private Vector3f moveDir;
 
     public Game() {
         this.renderer = new RenderManager();
         this.window = Launcher.getWindow();
         loader = new ObjectLoader();
         camera = new Camera();
-        cameraInc = new Vector3f(0f,0f,0f);
+        camera.setPosition(0,10,0);
+        camera.setRotation(45,0,0);
         sceneManager = new SceneManager(-90);
     }
 
@@ -43,63 +45,68 @@ public class Game implements ILogic {
         Model model = loader.loadOBJModel("/models/car.obj");
         model.setTexture(new Texture(loader.loadTexture("textures/car.png")), 1f);
 
-        Terrain terrain = new Terrain(new Vector3f(0,-1,-800), loader, new Material(new Texture(loader.loadTexture("textures/stonefloor.png"))));
+        // Fuel model
+        Model fuelModel = loader.loadOBJModel("/models/fuel.obj");
+        fuelModel.setTexture(new Texture(loader.loadTexture("textures/fuel.png")), 1f);
+
+
+        Terrain terrain = new Terrain(new Vector3f(-400,-1,-800), loader, new Material(new Texture(loader.loadTexture("textures/stonefloor.png"))));
         sceneManager.addTerrain(terrain);
         Random rnd = new Random();
-        for (int i = 0; i < 2; i++) {
-            float x = rnd.nextFloat() * 100 - 50;
-            float y = rnd.nextFloat() * 100 - 50;
-            float z = rnd.nextFloat() * -300;
-            sceneManager.addEntity(new Entity(model,
-                    new Vector3f(x,y,z),
-                    new Vector3f(rnd.nextFloat() * 180,rnd.nextFloat() * 180,rnd.nextFloat() * 180),
-                    0.05f));
+
+        float y = 1;
+        float z = 0;
+        for (int i = 0; i < 200; i++) {
+            float x = rnd.nextFloat() * 10 - 5;
+            z += 10;
+            sceneManager.addEntity(new Entity(fuelModel,
+                    new Vector3f(x,y,-z),
+                    new Vector3f(0,0,0),
+                    1f));
         }
         // Player entity
         player = new Entity(model, new Vector3f(0,-1,-10), new Vector3f(0,180,0), 0.05f);
         sceneManager.addEntity(player);
-        float lightIntensity = 1.0f;
+        float lightIntensity = 0.5f;
         Vector3f lightPosition = new Vector3f(-1,10,0);
         Vector3f lightColour = new Vector3f(1,1,1);
-        DirectionalLight directionalLight = new DirectionalLight(lightColour, lightPosition, lightIntensity);
+        directionalLight = new DirectionalLight(lightColour, lightPosition, lightIntensity);
         sceneManager.setDirectionalLight(directionalLight);
+
 
     }
 
     @Override
     public void input() {
-        cameraInc.set(0, 0, 0);
-        if (window.isKeyPressed(GLFW.GLFW_KEY_W)) {
-            cameraInc.z = -1;
+        moveDir = new Vector3f(0,0,0);
+        if (player.getPosition().x >= 10 || player.getPosition().x <= -10) {
+            return;
         }
-        if (window.isKeyPressed(GLFW.GLFW_KEY_S)) {
-            cameraInc.z = 1;
+
+        if (window.isKeyPressed(GLFW.GLFW_KEY_A)){
+            moveDir = new Vector3f(-1,0,0);
         }
-        if (window.isKeyPressed(GLFW.GLFW_KEY_A)) {
-            cameraInc.x = -1;
-        }
-        if (window.isKeyPressed(GLFW.GLFW_KEY_D)) {
-            cameraInc.x = 1;
-        }
-        if (window.isKeyPressed(GLFW.GLFW_KEY_Z)) {
-            cameraInc.y = -1;
-        }
-        if (window.isKeyPressed(GLFW.GLFW_KEY_X)) {
-            cameraInc.y = 1;
+        if (window.isKeyPressed(GLFW.GLFW_KEY_D)){
+            moveDir = new Vector3f(1,0,0);
         }
     }
     @Override
     public void update(float interval, MouseInput mouseInput) {
 
         // Move Player
-        player.incrementPosition(0,0,-0.1f);
+        float moveSpeed = 0.1f;
+        player.incrementPosition(moveDir.x * moveSpeed, 0,-1 * moveSpeed);
+        camera.movePosition(0,0,-1 * moveSpeed);
+        directionalLight.setDirection(player.getPosition());
 
-        camera.movePosition(cameraInc.x * Consts.CAMERA_MOVE_SPEED, cameraInc.y * Consts.CAMERA_MOVE_SPEED, cameraInc.z * Consts.CAMERA_MOVE_SPEED);
 
-        if (mouseInput.isLeftPressed()){
-            Vector2f rotVector = mouseInput.getDisplayVector();
-            camera.moveRotation(rotVector.x * Consts.MOUSE_SENSITIVITY, rotVector.y * Consts.MOUSE_SENSITIVITY, 0);
-        }
+
+        // camera.movePosition(cameraInc.x * Consts.CAMERA_MOVE_SPEED, cameraInc.y * Consts.CAMERA_MOVE_SPEED, cameraInc.z * Consts.CAMERA_MOVE_SPEED);
+//
+//        if (mouseInput.isLeftPressed()){
+//            Vector2f rotVector = mouseInput.getDisplayVector();
+//            camera.moveRotation(rotVector.x * Consts.MOUSE_SENSITIVITY, rotVector.y * Consts.MOUSE_SENSITIVITY, 0);
+//        }
 
         List<Entity> entities = sceneManager.getEntities();
         List<Terrain> terrains = sceneManager.getTerrains();
