@@ -1,17 +1,15 @@
-package Test;
+package Game;
 
 import Core.*;
 import Core.Entity.*;
 import Core.Entity.Terrain.Terrain;
 import Rendering.RenderManager;
 import Lighting.DirectionalLight;
-import Utils.Consts;
-import org.joml.Vector2f;
+import Test.Launcher;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
-import java.util.List;
 import java.util.Random;
 
 public class Game implements ILogic {
@@ -20,10 +18,13 @@ public class Game implements ILogic {
     private final WindowManager window;
     private final ObjectLoader loader;
 
-    private SceneManager sceneManager;
+    private final SceneManager sceneManager;
 
-    private Camera camera;
+    private final Camera camera;
     private DirectionalLight directionalLight;
+
+    private float previousTime;
+
 
     private Entity player;
     private Vector3f moveDir;
@@ -57,16 +58,18 @@ public class Game implements ILogic {
         float y = 1;
         float z = 0;
         for (int i = 0; i < 200; i++) {
-            float x = rnd.nextFloat() * 10 - 5;
-            z += 10;
-            sceneManager.addEntity(new Entity(fuelModel,
-                    new Vector3f(x,y,-z),
-                    new Vector3f(0,0,0),
-                    1f));
+            float x = rnd.nextFloat() * 20 - 10;
+            z += 20;
+            Entity fuelEntity = new Entity(fuelModel, new Vector3f(x,y,-z), new Vector3f(0,0,0), 1f);
+            fuelEntity.setName("Fuel");
+            fuelEntity.setCollider(new Vector3f(0f,0f,0f), new Vector3f(2,2 ,2));
+            sceneManager.addEntity(fuelEntity);
         }
         // Player entity
         player = new Entity(model, new Vector3f(0,-1,-10), new Vector3f(0,180,0), 0.05f);
-        sceneManager.addEntity(player);
+        player.setName("Player");
+        player.setCollider(new Vector3f(0f,0f,0f), new Vector3f(2,2 ,2));
+
         float lightIntensity = 0.5f;
         Vector3f lightPosition = new Vector3f(-1,10,0);
         Vector3f lightColour = new Vector3f(1,1,1);
@@ -79,32 +82,58 @@ public class Game implements ILogic {
     @Override
     public void input() {
         moveDir = new Vector3f(0,0,0);
-        if (player.getPosition().x >= 10 || player.getPosition().x <= -10) {
-            return;
+        if (player.getPosition().x <= 10) {
+            if (window.isKeyPressed(GLFW.GLFW_KEY_D) || window.isKeyPressed(GLFW.GLFW_KEY_RIGHT)){
+                moveDir = new Vector3f(1,0,0);
+            }
         }
-        if (window.isKeyPressed(GLFW.GLFW_KEY_A)|| window.isKeyPressed(GLFW.GLFW_KEY_LEFT)){
-            moveDir = new Vector3f(-1,0,0);
+        if(player.getPosition().x >= -10){
+            if (window.isKeyPressed(GLFW.GLFW_KEY_A)|| window.isKeyPressed(GLFW.GLFW_KEY_LEFT)){
+                moveDir = new Vector3f(-1,0,0);
+            }
         }
-        if (window.isKeyPressed(GLFW.GLFW_KEY_D) || window.isKeyPressed(GLFW.GLFW_KEY_RIGHT)){
-            moveDir = new Vector3f(1,0,0);
-        }
+
+
     }
+
+
     @Override
     public void update(float interval, MouseInput mouseInput) {
 
-        // Move Player
-        float moveSpeed = 0.1f;
+        float currentTime = System.nanoTime();
+        float scoreIncrementDelay = 1f;
+        if (currentTime > previousTime + scoreIncrementDelay) {
+            if (sceneManager.getScoreManager().getScore() <= 0) {
+
+            }else if (sceneManager.getScoreManager().getScore() >= 100){
+                sceneManager.getScoreManager().setScore(100);
+                Launcher.getEngine().closeEngine();
+            }else {
+                sceneManager.getScoreManager().decrementScore(1);
+            }
+        }
+        previousTime = currentTime;
+
+        float moveSpeed = 0.3f;
         player.incrementPosition(moveDir.x * moveSpeed, 0,-1 * moveSpeed);
         camera.movePosition(0,0,-1 * moveSpeed);
         directionalLight.setDirection(player.getPosition());
 
-        List<Entity> entities = sceneManager.getEntities();
-        List<Terrain> terrains = sceneManager.getTerrains();
-        for (Entity entity : entities) {
+
+        for (Entity entity : sceneManager.getEntities()) {
+            if (player.isColliding(entity)) {
+                sceneManager.getScoreManager().incrementScore(1);
+            }
+        }
+
+        window.setTitle("Score: " + sceneManager.getScoreManager().getScore());
+        renderer.processEntity(player);
+
+        for (Entity entity : sceneManager.getEntities()) {
             renderer.processEntity(entity);
 
         }
-        for (Terrain terrain : terrains) {
+        for (Terrain terrain : sceneManager.getTerrains()) {
             renderer.processTerrain(terrain);
         }
 

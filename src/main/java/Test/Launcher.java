@@ -2,6 +2,7 @@ package Test;
 
 import Core.WindowManager;
 import Core.EngineManager;
+import Game.Game;
 import Utils.*;
 
 public class Launcher {
@@ -25,5 +26,8 @@ public class Launcher {
     }
     public static Game getGame() {
         return game;
+    }
+    public static EngineManager getEngine() {
+        return engine;
     }
 }

@@ -1,6 +1,7 @@
 package Core.Entity;
 
 import Core.Entity.Terrain.Terrain;
+import Game.ScoreManager;
 import Lighting.DirectionalLight;
 import Utils.Consts;
 import org.joml.Vector3f;
@@ -18,9 +19,12 @@ public class SceneManager {
 
     private float lightAngle;
 
+    private ScoreManager scoreManager;
+
     public SceneManager(float lightAngle) {
         entities = new ArrayList<Entity>();
         terrains = new ArrayList<Terrain>();
+        scoreManager = new ScoreManager();
         this.lightAngle = lightAngle;
         ambientLight = Consts.AMBIENT_LIGHT;
     }
@@ -70,6 +74,9 @@ public class SceneManager {
         return lightAngle;
     }
 
+    public ScoreManager getScoreManager() {
+        return scoreManager;
+    }
     public void setLightAngle(float lightAngle) {
         this.lightAngle = lightAngle;
     }

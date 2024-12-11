@@ -1,5 +1,6 @@
 package Core;
 
+import Game.ScoreManager;
 import Test.Launcher;
 import Utils.*;
 import org.lwjgl.glfw.GLFW;
@@ -16,6 +17,7 @@ public class EngineManager {
 
     private WindowManager window;
     private  MouseInput mouseInput;
+    private ScoreManager scoreManager;
 
     private GLFWErrorCallback errorCallback;
 
@@ -26,6 +28,7 @@ public class EngineManager {
         window = Launcher.getWindow();
         gameLogic = Launcher.getGame();
         mouseInput = new MouseInput();
+        scoreManager = new ScoreManager();
         window.init();
         gameLogic.init();
         mouseInput.init();
@@ -64,7 +67,6 @@ public class EngineManager {
                 }
                 if(frameCounter >= NANOSECONDS){
                     setFps(frames);
-                    window.setTitle(Consts.TITLE + "Game Engine FPS: " + getFps());
                     frames = 0;
                     frameCounter = 0;
                 }
@@ -109,4 +111,8 @@ public class EngineManager {
     public static void setFps(int fps) {
         EngineManager.fps = fps;
     }
+    public void closeEngine(){
+        cleanup();
+    }
+
 }
