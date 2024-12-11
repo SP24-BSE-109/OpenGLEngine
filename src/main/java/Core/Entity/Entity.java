@@ -2,7 +2,7 @@ package Core.Entity;
 
 import org.joml.Vector3f;
 
-public class Entity {
+public abstract class Entity {
 
     private String name;
     private Model model;
@@ -10,7 +10,6 @@ public class Entity {
     private Vector3f rotation;
     private float scale;
 
-    // Collider settings
     private Vector3f collisionBoxMax;
     private Vector3f collisionBoxMin;
 
@@ -64,7 +63,8 @@ public class Entity {
                 (thisMin.y <= otherMax.y && thisMax.y >= otherMin.y) &&
                 (thisMin.z <= otherMax.z && thisMax.z >= otherMin.z);
     }
-
+    public abstract void input();
+    public abstract void update();
 
     public Model getModel() {
         return model;

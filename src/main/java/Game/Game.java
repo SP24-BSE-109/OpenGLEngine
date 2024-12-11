@@ -29,7 +29,6 @@ public class Game implements ILogic {
 
 
     private Player player;
-    private Vector3f moveDir;
 
     public Game() {
         this.renderer = new RenderManager();
@@ -55,8 +54,11 @@ public class Game implements ILogic {
         fuelModel.setTexture(new Texture(loader.loadTexture("textures/fuel.png")), 1f);
 
 
-        Terrain terrain = new Terrain(new Vector3f(-400,-1,-800), loader, new Material(new Texture(loader.loadTexture("textures/floor.png"))));
+        Terrain terrain = new Terrain(new Vector3f(-400,-1,-800),
+                loader,
+                new Material(new Texture(loader.loadTexture("textures/floor.png"))));
         sceneManager.addTerrain(terrain);
+
         Random rnd = new Random();
 
         float y = 1;
@@ -65,13 +67,11 @@ public class Game implements ILogic {
             float x = rnd.nextFloat() * 20 - 10;
             z += 20;
             Collectables fuelEntity = new Collectables(fuelModel, new Vector3f(x,y,-z), new Vector3f(0,0,0), 1f);
-            fuelEntity.setName("Fuel");
             fuelEntity.setCollider(new Vector3f(0f,0f,0f), new Vector3f(2,2 ,2));
             sceneManager.addEntity(fuelEntity);
         }
         // Player entity
         player = new Player(model, new Vector3f(0,-1,-10), new Vector3f(0,180,0), 0.05f);
-        player.setName("Player");
         player.setCollider(new Vector3f(0f,0f,0f), new Vector3f(2,2 ,2));
         sceneManager.addEntity(player);
 
@@ -86,17 +86,8 @@ public class Game implements ILogic {
 
     @Override
     public void input() {
-        moveDir = new Vector3f(0,0,0);
-        if (player.getPosition().x <= 10) {
-            if (window.isKeyPressed(GLFW.GLFW_KEY_D) || window.isKeyPressed(GLFW.GLFW_KEY_RIGHT)){
-                moveDir = new Vector3f(1,0,0);
-            }
-        }
-        if(player.getPosition().x >= -10){
-            if (window.isKeyPressed(GLFW.GLFW_KEY_A)|| window.isKeyPressed(GLFW.GLFW_KEY_LEFT)){
-                moveDir = new Vector3f(-1,0,0);
-            }
-        }
+        player.input();
+
         if (window.isKeyPressed(GLFW.GLFW_KEY_P)) {
             if (GameManager.currentState == GameStates.Pause){
                 GameManager.currentState = GameStates.Play;
@@ -109,38 +100,24 @@ public class Game implements ILogic {
 
     @Override
     public void update(float interval, MouseInput mouseInput) {
-        for (Entity entity : sceneManager.getEntities()) {
-            renderer.processEntity(entity);
-        }
-        for (Terrain terrain : sceneManager.getTerrains()) {
-            renderer.processTerrain(terrain);
-        }
+        processEntities();
 
-        if (GameManager.currentState == GameStates.Pause || GameManager.currentState == GameStates.Win || GameManager.currentState == GameStates.Lose) {
+        if (GameManager.currentState == GameStates.Pause ||
+                GameManager.currentState == GameStates.Win ||
+                GameManager.currentState == GameStates.Lose) {
             return;
         }
 
-        float currentTime = System.nanoTime();
-        float scoreIncrementDelay = 1f;
-        if (currentTime > previousTime + scoreIncrementDelay) {
-            if (sceneManager.getScoreManager().getScore() <= 0) {
-            } else if (sceneManager.getScoreManager().getScore() >= 100) {
-                sceneManager.getScoreManager().setScore(100);
-                GameManager.currentState = GameStates.Win;
-                // Launcher.getEngine().closeEngine();
-            } else {
-                sceneManager.getScoreManager().decrementScore(1);
-            }
-        }
-        previousTime = currentTime;
+        updateCalls();
+
 
         float moveSpeed = 0.3f;
-        player.incrementPosition(moveDir.x * moveSpeed, 0, -1 * moveSpeed);
         camera.movePosition(0, 0, -1 * moveSpeed);
         directionalLight.setDirection(player.getPosition());
 
         List<Entity> toRemove = new ArrayList<>();
         for (Entity entity : sceneManager.getEntities()) {
+
             if (entity instanceof Collectables && player.isColliding(entity)) {
                 sceneManager.getScoreManager().incrementScore(10);
                 toRemove.add(entity);
@@ -149,9 +126,25 @@ public class Game implements ILogic {
         for (Entity entity : toRemove) {
             sceneManager.removeEntity(entity);
         }
-
         window.setTitle("Score: " + sceneManager.getScoreManager().getScore());
     }
+
+    private void updateCalls() {
+        for (Entity entity : sceneManager.getEntities()) {
+            entity.update();
+        }
+        sceneManager.getScoreManager().update();
+    }
+
+    private void processEntities() {
+        for (Entity entity : sceneManager.getEntities()) {
+            renderer.processEntity(entity);
+        }
+        for (Terrain terrain : sceneManager.getTerrains()) {
+            renderer.processTerrain(terrain);
+        }
+    }
+
 
     @Override
     public void render() {
