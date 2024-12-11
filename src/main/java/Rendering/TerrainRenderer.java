@@ -31,8 +31,8 @@ public class TerrainRenderer implements IRenderer<Terrain> {
 
     @Override
     public void init() throws Exception {
-        shader.createVertexShader(Utils.loadResource("/shaders/terrain_vertex.vs"));
-        shader.createFragmentShader(Utils.loadResource("/shaders/terrain_fragment.fs"));
+        shader.createVertexShader(Utils.loadResource("/shaders/terrain_vertex.vert"));
+        shader.createFragmentShader(Utils.loadResource("/shaders/terrain_fragment.frag"));
         shader.link();
         shader.createUniform("textureSampler");
         shader.createUniform("transformationMatrix");

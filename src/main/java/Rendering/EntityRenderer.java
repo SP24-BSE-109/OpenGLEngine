@@ -29,8 +29,8 @@ public class EntityRenderer implements IRenderer<Entity> {
 
     @Override
     public void init() throws Exception {
-        shader.createVertexShader(Utils.loadResource("/shaders/vertex.vs"));
-        shader.createFragmentShader(Utils.loadResource("/shaders/fragment.fs"));
+        shader.createVertexShader(Utils.loadResource("/shaders/vertex.vert"));
+        shader.createFragmentShader(Utils.loadResource("/shaders/fragment.frag"));
         shader.link();
         shader.createUniform("textureSampler");
         shader.createUniform("transformationMatrix");

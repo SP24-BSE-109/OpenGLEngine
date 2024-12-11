@@ -2,7 +2,6 @@ package Rendering;
 
 import Core.Camera;
 import Core.Entity.Entity;
-import Core.Entity.Model;
 import Core.Entity.Terrain.Terrain;
 import Core.ShaderManager;
 import Core.WindowManager;

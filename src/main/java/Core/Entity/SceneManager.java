@@ -80,4 +80,9 @@ public class SceneManager {
     public void setLightAngle(float lightAngle) {
         this.lightAngle = lightAngle;
     }
+
+    public void removeEntity(Entity entity) {
+        entities.remove(entity);
+    }
+
 }
