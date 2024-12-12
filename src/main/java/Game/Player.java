@@ -2,7 +2,7 @@ package Game;
 
 import Core.Entity.Entity;
 import Core.Entity.Model;
-import Test.Launcher;
+import Launch.Launcher;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 

@@ -5,7 +5,7 @@ import Core.Entity.*;
 import Core.Entity.Terrain.Terrain;
 import Rendering.RenderManager;
 import Lighting.DirectionalLight;
-import Test.Launcher;
+import Launch.Launcher;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;

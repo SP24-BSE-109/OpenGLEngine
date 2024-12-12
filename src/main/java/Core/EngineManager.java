@@ -1,8 +1,7 @@
 package Core;
 
 import Game.ScoreManager;
-import Test.Launcher;
-import Utils.*;
+import Launch.Launcher;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 

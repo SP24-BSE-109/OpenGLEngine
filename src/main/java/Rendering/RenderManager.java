@@ -6,7 +6,7 @@ import Core.Entity.Terrain.Terrain;
 import Core.ShaderManager;
 import Core.WindowManager;
 import Lighting.DirectionalLight;
-import Test.Launcher;
+import Launch.Launcher;
 import Utils.*;
 
 import org.lwjgl.opengl.GL11;

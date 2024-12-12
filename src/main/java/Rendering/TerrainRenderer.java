@@ -1,12 +1,11 @@
 package Rendering;
 
 import Core.Camera;
-import Core.Entity.Entity;
 import Core.Entity.Model;
 import Core.Entity.Terrain.Terrain;
 import Core.ShaderManager;
 import Lighting.DirectionalLight;
-import Test.Launcher;
+import Launch.Launcher;
 import Utils.Transformation;
 import Utils.Utils;
 import org.lwjgl.opengl.GL11;
@@ -15,9 +14,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class TerrainRenderer implements IRenderer<Terrain> {
 
