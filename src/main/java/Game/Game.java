@@ -43,30 +43,24 @@ public class Game implements ILogic {
     @Override
     public void init() throws Exception {
         GameManager.currentState = GameStates.Start;
-
         renderer.init();
         // Player Model
         Model model = loader.loadOBJModel("/models/car.obj");
         model.setTexture(new Texture(loader.loadTexture("textures/car.png")), 1f);
-
         // Fuel model
-        Model fuelModel = loader.loadOBJModel("/models/fuel.obj");
-        fuelModel.setTexture(new Texture(loader.loadTexture("textures/fuel.png")), 1f);
-
-
+        Model fuelModel = loader.loadOBJModel("/models/chicken.obj");
+        fuelModel.setTexture(new Texture(loader.loadTexture("textures/chicken.png")), 1f);
         Terrain terrain = new Terrain(new Vector3f(-400,-1,-800),
                 loader,
                 new Material(new Texture(loader.loadTexture("textures/floor.png"))));
         sceneManager.addTerrain(terrain);
-
         Random rnd = new Random();
-
         float y = 1;
         float z = 0;
         for (int i = 0; i < 200; i++) {
             float x = rnd.nextFloat() * 20 - 10;
             z += 20;
-            Collectables fuelEntity = new Collectables(fuelModel, new Vector3f(x,y,-z), new Vector3f(0,0,0), 1f);
+            Collectables fuelEntity = new Collectables(fuelModel, new Vector3f(x,y,-z), new Vector3f(0,0,0), 0.01f);
             fuelEntity.setCollider(new Vector3f(0f,0f,0f), new Vector3f(2,2 ,2));
             sceneManager.addEntity(fuelEntity);
         }
@@ -74,13 +68,11 @@ public class Game implements ILogic {
         player = new Player(model, new Vector3f(0,-1,-10), new Vector3f(0,180,0), 0.05f);
         player.setCollider(new Vector3f(0f,0f,0f), new Vector3f(2,2 ,2));
         sceneManager.addEntity(player);
-
         float lightIntensity = 0.5f;
         Vector3f lightPosition = new Vector3f(-1,10,0);
         Vector3f lightColour = new Vector3f(1,1,1);
         directionalLight = new DirectionalLight(lightColour, lightPosition, lightIntensity);
         sceneManager.setDirectionalLight(directionalLight);
-
         GameManager.currentState = GameStates.Play;
     }
 

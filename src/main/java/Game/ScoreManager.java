@@ -14,7 +14,6 @@ public class ScoreManager {
         float scoreDecrementDelay = 1e9f;
         if (currentTime - previousTime >= scoreDecrementDelay) {
             if (getScore() <= 0) {
-                // Handle game-over logic if needed
             } else if (getScore() >= 100) {
                 setScore(100);
                 GameManager.currentState = GameStates.Win;
