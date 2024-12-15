@@ -19,13 +19,10 @@ public class Game implements ILogic {
     private final RenderManager renderer;
     private final WindowManager window;
     private final ObjectLoader loader;
-
     private final SceneManager sceneManager;
-
     private final Camera camera;
     private DirectionalLight directionalLight;
 
-    private float previousTime;
 
 
     private Player player;
@@ -33,27 +30,40 @@ public class Game implements ILogic {
     public Game() {
         this.renderer = new RenderManager();
         this.window = Launcher.getWindow();
+
         loader = new ObjectLoader();
         camera = new Camera();
+
         camera.setPosition(0,10,0);
         camera.setRotation(45,0,0);
+
         sceneManager = new SceneManager(-90);
     }
 
     @Override
     public void init() throws Exception {
-        GameManager.currentState = GameStates.Start;
         renderer.init();
+
+        startGame();
+    }
+
+    private void startGame() throws Exception {
+
+        GameManager.currentState = GameStates.Start;
+
         // Player Model
         Model model = loader.loadOBJModel("/models/car.obj");
         model.setTexture(new Texture(loader.loadTexture("textures/car.png")), 1f);
+
         // Fuel model
         Model fuelModel = loader.loadOBJModel("/models/chicken.obj");
         fuelModel.setTexture(new Texture(loader.loadTexture("textures/chicken.png")), 1f);
         Terrain terrain = new Terrain(new Vector3f(-400,-1,-800),
                 loader,
                 new Material(new Texture(loader.loadTexture("textures/floor.png"))));
+
         sceneManager.addTerrain(terrain);
+
         Random rnd = new Random();
         float y = 1;
         float z = 0;
@@ -67,13 +77,17 @@ public class Game implements ILogic {
         // Player entity
         player = new Player(model, new Vector3f(0,-1,-10), new Vector3f(0,180,0), 0.05f);
         player.setCollider(new Vector3f(0f,0f,0f), new Vector3f(2,2 ,2));
+
         sceneManager.addEntity(player);
+
         float lightIntensity = 0.5f;
         Vector3f lightPosition = new Vector3f(-1,10,0);
         Vector3f lightColour = new Vector3f(1,1,1);
         directionalLight = new DirectionalLight(lightColour, lightPosition, lightIntensity);
         sceneManager.setDirectionalLight(directionalLight);
         GameManager.currentState = GameStates.Play;
+
+        System.out.println("Started Game");
     }
 
     @Override
@@ -126,6 +140,22 @@ public class Game implements ILogic {
             entity.update();
         }
         sceneManager.getScoreManager().update();
+    }
+    public void restartGame() throws Exception {
+        stopGame();
+        startGame();
+
+    }
+
+    private void stopGame() {
+        // Remove all entities
+        for (Entity entity : sceneManager.getEntities()) {
+            sceneManager.removeEntity(entity);
+        }
+        // Remove all terrains
+        for (Terrain terrain : sceneManager.getTerrains()) {
+            sceneManager.removeTerrain(terrain);
+        }
     }
 
     private void processEntities() {

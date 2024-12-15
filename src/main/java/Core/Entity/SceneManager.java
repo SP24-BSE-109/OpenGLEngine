@@ -86,4 +86,7 @@ public class SceneManager {
     }
 
 
+    public void removeTerrain(Terrain terrain) {
+        terrains.remove(terrain);
+    }
 }
