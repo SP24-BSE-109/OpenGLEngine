@@ -18,14 +18,7 @@ public class ScoreManager {
             if (getScore() <= 0) {
             } else if (getScore() >= 100) {
                 setScore(100);
-                try{
-                    System.out.println("Restarting Game");
-                    Launcher.getGame().restartGame();
-                }catch (Exception e){
-                    System.out.println(e);
-                }
-
-                GameManager.currentState = GameStates.Win;
+                GameManager.setCurrentState(GameStates.Win);
             } else {
                decrementScore(1);
             }

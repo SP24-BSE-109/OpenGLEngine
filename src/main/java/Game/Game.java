@@ -43,14 +43,10 @@ public class Game implements ILogic {
     @Override
     public void init() throws Exception {
         renderer.init();
-
-        startGame();
+        GameManager.setCurrentState(GameStates.Start);
     }
 
-    private void startGame() throws Exception {
-
-        GameManager.currentState = GameStates.Start;
-
+    public void startGame() throws Exception {
         // Player Model
         Model model = loader.loadOBJModel("/models/car.obj");
         model.setTexture(new Texture(loader.loadTexture("textures/car.png")), 1f);
@@ -85,7 +81,7 @@ public class Game implements ILogic {
         Vector3f lightColour = new Vector3f(1,1,1);
         directionalLight = new DirectionalLight(lightColour, lightPosition, lightIntensity);
         sceneManager.setDirectionalLight(directionalLight);
-        GameManager.currentState = GameStates.Play;
+        GameManager.setCurrentState(GameStates.Play);
 
         System.out.println("Started Game");
     }
@@ -95,10 +91,10 @@ public class Game implements ILogic {
         player.input();
 
         if (window.isKeyPressed(GLFW.GLFW_KEY_P)) {
-            if (GameManager.currentState == GameStates.Pause){
-                GameManager.currentState = GameStates.Play;
-            }else if (GameManager.currentState == GameStates.Play){
-                GameManager.currentState = GameStates.Pause;
+            if (GameManager.getCurrentState() == GameStates.Pause) {
+                GameManager.setCurrentState(GameStates.Play);
+            }else if (GameManager.getCurrentState() == GameStates.Play) {
+                GameManager.setCurrentState(GameStates.Pause);
             }
         }
 
@@ -108,9 +104,12 @@ public class Game implements ILogic {
     public void update(float interval, MouseInput mouseInput) {
         processEntities();
 
-        if (GameManager.currentState == GameStates.Pause ||
-                GameManager.currentState == GameStates.Win ||
-                GameManager.currentState == GameStates.Lose) {
+        if (GameManager.getCurrentState() == GameStates.Pause ||
+                GameManager.getCurrentState() == GameStates.Win ||
+                GameManager.getCurrentState() == GameStates.Lose) {
+            if (GameManager.getCurrentState() == GameStates.Win || GameManager.getCurrentState() == GameStates.Lose) {
+                stopGame();
+            }
             return;
         }
 
@@ -147,15 +146,16 @@ public class Game implements ILogic {
 
     }
 
-    private void stopGame() {
-        // Remove all entities
-        for (Entity entity : sceneManager.getEntities()) {
-            sceneManager.removeEntity(entity);
-        }
-        // Remove all terrains
-        for (Terrain terrain : sceneManager.getTerrains()) {
-            sceneManager.removeTerrain(terrain);
-        }
+    public void stopGame() {
+//        // Remove all entities
+//        for (Entity entity : sceneManager.getEntities()) {
+//            sceneManager.removeEntity(entity);
+//        }
+//        // Remove all terrains
+//        for (Terrain terrain : sceneManager.getTerrains()) {
+//            sceneManager.removeTerrain(terrain);
+//        }
+
     }
 
     private void processEntities() {
