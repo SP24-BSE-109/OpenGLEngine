@@ -16,7 +16,6 @@ public class EngineManager {
 
     private WindowManager window;
     private  MouseInput mouseInput;
-    private ScoreManager scoreManager;
 
     private GLFWErrorCallback errorCallback;
 
@@ -27,7 +26,6 @@ public class EngineManager {
         window = Launcher.getWindow();
         gameLogic = Launcher.getGame();
         mouseInput = new MouseInput();
-        scoreManager = new ScoreManager();
         window.init();
         gameLogic.init();
         mouseInput.init();
